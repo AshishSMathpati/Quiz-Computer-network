@@ -1,27 +1,64 @@
-function QuizCard({ question, index, total, onAnswer }) {
+import { useState } from "react"
+import { useNavigate } from "react-router-dom"
+import questions from "../data/questions"
+
+
+
+function QuizCard() {
+  const navigate = useNavigate()
+  const [current, setCurrent] = useState(0)
+  const [score, setScore] = useState(0)
+  const [answers, setAnswers] = useState([])
+  const handleAnswer = (option) => {
+    const newAnswers = [...answers, option]
+    setAnswers(newAnswers)
+
+    let newScore = score
+    if (option === questions[current].answer) {
+      newScore = score + 1
+      setScore(newScore)
+      alert("Correct")
+    }
+    if(option != questions[current].answer){
+      alert("Wrong")
+    }
+    if (current + 1 < questions.length) {
+      setCurrent(current + 1)
+
+    }
+    else {
+      navigate("/result", {
+        state: {
+          score: newScore,
+          answers: newAnswers,
+          questions: questions
+        }
+      })
+    }
+  }
+ 
+
   return (
-    <div>
-      <p className="text-sm text-gray-300 mb-2">
-        Question {index + 1} of {total}
-      </p>
-
-      <h2 className="text-lg font-semibold mb-4">
-        {question.question}
+    <div className="w-[420px] bg-zinc-200 p-6 rounded-xl mx-140 my-54">
+      <h2 className="">
+        Question {current + 1} / {questions.length}
       </h2>
+      <h3 className="mb-4">
+        {questions[current].question}
+      </h3>
 
-      <div className="space-y-3">
-        {question.options.map(option => (
+      {
+        questions[current].options.map(option => (
           <button
             key={option}
-            onClick={() => onAnswer(option)}
-            className="w-full text-left px-4 py-2 rounded-xl bg-white/10 hover:bg-purple-500/40 transition"
+            onClick={() => handleAnswer(option)}
+            className="block w-full mb-2 bg-blue-400 p-2 rounded hover:bg-blue-600"
           >
             {option}
           </button>
-        ))}
-      </div>
+        ))
+      }
     </div>
-  );
+  )
 }
-
-export default QuizCard;
+export default QuizCard
